@@ -32,7 +32,7 @@ jobs:
         # '$환경변수'를 통해 사전에 지정한 환경 변수를 활용할 수 있습니다.
         # 리눅스: $PORT
         # 윈도우: $env:PORT
-        run: npm start & npx wait-on http://127.0.0.1:X$PORT
+        run: npm start & npx wait-on http://127.0.0.1:$PORT
       - name: Run tests
         run: npm test
       - name: Output information
