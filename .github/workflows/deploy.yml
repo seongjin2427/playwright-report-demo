@@ -4,18 +4,15 @@ on:
     branches:
       - main
       - dev
-# 워크플로우 레벨에서 지정한 환경 변수
 env:
-  # 모든 jobs에서 활용할 수 있습니다.
   MONGODB_DB_NAME: gha-demo
 jobs:
   test:
-    # job 단계에서 지정한 환경 변수
-    env: 
-      # 하위 Step에서 활용할 수 있습니다.
+    env:
       MONGODB_CLUSTER_ADDRESS: cluster0.hyesnzu.mongodb.net
-      MONGODB_USERNAME: ito
-      MONGODB_PASSWORD: QvAgsJM7cG8rFGas
+      # 아래와 같은 구문으로 secrets를 사용할 수 있습니다.
+      MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
+      MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD}}
       PORT: 8080
     runs-on: ubuntu-latest
     steps:
@@ -29,9 +26,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
       - name: Run server
-        # '$환경변수'를 통해 사전에 지정한 환경 변수를 활용할 수 있습니다.
-        # 리눅스: $PORT
-        # 윈도우: $env:PORT
         run: npm start & npx wait-on http://127.0.0.1:$PORT
       - name: Run tests
         run: npm test
