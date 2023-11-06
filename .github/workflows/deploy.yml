@@ -8,6 +8,7 @@ env:
   MONGODB_DB_NAME: gha-demo
 jobs:
   test:
+    environment: testing
     env:
       MONGODB_CLUSTER_ADDRESS: cluster0.hyesnzu.mongodb.net
       # 아래와 같은 구문으로 secrets를 사용할 수 있습니다.
