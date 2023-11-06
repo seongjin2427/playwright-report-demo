@@ -1,0 +1,49 @@
+name: Deployment
+on:
+  push:
+    branches:
+      - main
+      - dev
+# 워크플로우 레벨에서 지정한 환경 변수
+env:
+  # 모든 jobs에서 활용할 수 있습니다.
+  MONGODB_DB_NAME: gha-demo
+jobs:
+  test:
+    # job 단계에서 지정한 환경 변수
+    env: 
+      # 하위 Step에서 활용할 수 있습니다.
+      MONGODB_CLUSTER_ADDRESS: cluster0.hyesnzu.mongodb.net
+      MONGODB_USERNAME: ito
+      MONGODB_PASSWORD: QvAgsJM7cG8rFGas
+      PORT: 8080
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Code
+        uses: actions/checkout@v3
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: npm-deps-${{ hashFiles('**/package-lock.json') }}
+      - name: Install dependencies
+        run: npm ci
+      - name: Run server
+        # '$환경변수'를 통해 사전에 지정한 환경 변수를 활용할 수 있습니다.
+        # 리눅스: $PORT
+        # 윈도우: $env:PORT
+        run: npm start & npx wait-on http://127.0.0.1:X$PORT
+      - name: Run tests
+        run: npm test
+      - name: Output information
+        run: |
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Output information
+        # MONGODB_USERNAME은 test job에서만 활용할 수 있으므로 참조할 수 없습니다.
+        run: |
+          echo "MONGODB_USERNAME: ${{ env.MONGODB_USERNAME }}"
+          echo "MONGDB_DB_NAME $MONGODB_DB_NAME"
